@@ -23,6 +23,21 @@
 module Bake
 	module Gem
 		module Shell
+			def system(*arguments, **options)
+				Console.logger.info(Console::Event::Spawn.for(*arguments, **options))
+				
+				begin
+					pid = Process.spawn(*arguments, **options)
+					yield if block_given?
+				ensure
+					pid, status = Process.wait2(pid) if pid
+					
+					unless status.success?
+						raise "Failed to execute #{arguments}: #{status}!"
+					end
+				end
+			end
+			
 			def execute(*arguments, **options)
 				Console.logger.info(Console::Event::Spawn.for(*arguments, **options))
 				
@@ -43,7 +58,7 @@ module Bake
 			end
 			
 			def readlines(*arguments, **options)
-				execute(*arguments, **option) do |output|
+				execute(*arguments, **options) do |output|
 					return output.readlines
 				end
 			end

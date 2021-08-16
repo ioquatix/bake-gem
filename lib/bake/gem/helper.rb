@@ -72,8 +72,10 @@ module Bake
 			end
 			
 			def guard_clean
-				if lines = readlines("git", "status", "--porcelain")
-					raise "Repository has uncommited changes!\n#{lines}"
+				lines = readlines("git", "status", "--porcelain")
+				
+				if lines.any?
+					raise "Repository has uncommited changes!\n#{lines.join('')}"
 				end
 			end
 			

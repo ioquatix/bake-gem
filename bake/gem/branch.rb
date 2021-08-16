@@ -20,48 +20,40 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require_relative '../../lib/bake/bundler/shell'
+require_relative '../../lib/bake/gem/shell'
 
-include Bake::Bundler::Shell
+include Bake::Gem::Shell
 
 # Increment the patch number of the current version.
 def patch
-	increment([nil, nil, 1], message: "Bump patch version.")
+	commit([nil, nil, 1], message: "Bump patch version.")
 end
 
 # Increment the minor number of the current version.
 def minor
-	increment([nil, 1, 0], message: "Bump minor version.")
+	commit([nil, 1, 0], message: "Bump minor version.")
 end
 
 # Increment the major number of the current version.
 def major
-	increment([1, 0, 0], message: "Bump major version.")
+	commit([1, 0, 0], message: "Bump major version.")
 end
 
 # Scans the files listed in the gemspec for a file named `version.rb`. Extracts the VERSION constant and updates it according to the version bump. Commits the changes to git using the specified message.
 #
 # @parameter bump [Array(Integer | Nil)] the version bump to apply before publishing, e.g. `0,1,0` to increment minor version number.
 # @parameter message [String] the git commit message to use.
-def increment(bump, message: "Bump version.")
-	release = context.lookup('bundler:release')
+def commit(bump, message: "Bump version.")
+	release = context.lookup('gem:release')
 	helper = release.instance.helper
 	gemspec = helper.gemspec
 	
 	helper.guard_clean
 	
-	version_path = helper.update_version(bump) do |version|
-		version_string = version.join('.')
-		
-		Console.logger.info(self) {"Updated version to #{version_string}"}
-		
-		# Ensure that any subsequent tasks use the correct version!
-		gemspec.version = Gem::Version.new(version_string)
-		
-		system("git", "checkout", "-b", "release-v#{version_string}")
-	end
+	version_path = context.lookup('gem:version:increment').increment(bump, message: message)
 	
 	if version_path
+		system("git", "checkout", "-b", "release-v#{gemspec.version}")
 		system("git", "add", version_path, chdir: context.root)
 		system("git", "commit", "-m", message, chdir: context.root)
 	else
