@@ -22,6 +22,7 @@
 
 require 'rubygems'
 require 'rubygems/package'
+require 'fileutils'
 
 require_relative 'shell'
 
