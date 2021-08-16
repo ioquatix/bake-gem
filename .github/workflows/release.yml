@@ -1,0 +1,19 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@master
+      with:
+        bundler-cache: true
+    
+    - name: Run tests
+      timeout-minutes: 5
+      run: ${{matrix.env}} bundle exec bake gem:release
