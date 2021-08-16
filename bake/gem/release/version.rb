@@ -63,6 +63,9 @@ end
 # @parameter bump [Array(Integer | Nil)] the version bump to apply before publishing, e.g. `0,1,0` to increment minor version number.
 # @parameter message [String] the git commit message to use.
 def commit(bump, message: "Bump version.")
+	release = context.lookup('gem:release')
+	helper = release.instance.helper
+	
 	helper.guard_clean
 	
 	version_path = increment(bump, message: message)
