@@ -58,7 +58,7 @@ def increment(bump, message: "Bump version.")
 	end
 end
 
-# Scans the files listed in the gemspec for a file named `version.rb`. Extracts the VERSION constant and updates it according to the version bump. Commits the changes to git using the specified message.
+# Increments the version and commits the changes on the current branch.
 #
 # @parameter bump [Array(Integer | Nil)] the version bump to apply before publishing, e.g. `0,1,0` to increment minor version number.
 # @parameter message [String] the git commit message to use.

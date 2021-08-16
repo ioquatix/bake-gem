@@ -24,7 +24,7 @@ module Bake
 	module Gem
 		module Shell
 			def system(*arguments, **options)
-				Console.logger.info(Console::Event::Spawn.for(*arguments, **options))
+				Console.logger.info(self, Console::Event::Spawn.for(*arguments, **options))
 				
 				begin
 					pid = Process.spawn(*arguments, **options)
@@ -39,7 +39,7 @@ module Bake
 			end
 			
 			def execute(*arguments, **options)
-				Console.logger.info(Console::Event::Spawn.for(*arguments, **options))
+				Console.logger.info(self, Console::Event::Spawn.for(*arguments, **options))
 				
 				IO.pipe do |input, output|
 					pid = Process.spawn(*arguments, out: output, **options)

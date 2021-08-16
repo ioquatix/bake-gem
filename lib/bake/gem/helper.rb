@@ -23,6 +23,8 @@
 require 'rubygems'
 require 'rubygems/package'
 
+require_relative 'shell'
+
 module Bake
 	module Gem
 		class Helper
@@ -79,17 +81,23 @@ module Bake
 				end
 			end
 			
+			# @parameter root [String] The root path for package files.
 			# @returns [String] The path to the built gem package.
-			def build_gem
-				Gem::Package.build(@gemspec)
+			def build_gem(root: "pkg")
+				# Ensure the output directory exists:
+				FileUtils.mkdir_p("pkg")
+				
+				output_path = File.join('pkg', @gemspec.file_name)
+				
+				::Gem::Package.build(@gemspec, false, false, output_path)
 			end
 			
-			def install_gem(*arguments)
-				execute("gem", "install", @gemspec.file_name, *arguments)
+			def install_gem(*arguments, path: @gemspec.file_name)
+				system("gem", "install", path, *arguments)
 			end
 			
-			def push_gem(*arguments)
-				execute("gem", "push", @gemspec.file_name, *arguments)
+			def push_gem(*arguments, path: @gemspec.file_name)
+				system("gem", "push", path, *arguments)
 			end
 			
 			private

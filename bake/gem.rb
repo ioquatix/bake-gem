@@ -21,46 +21,51 @@
 # THE SOFTWARE.
 
 require_relative '../lib/bake/gem/helper'
+require_relative '../lib/bake/gem/shell'
+
+include Bake::Gem::Shell
 
 def initialize(context)
 	super(context)
 	
 	@helper = Bake::Gem::Helper.new(context.root)
-	@built_gem_path = nil
 end
 
 attr :helper
 
+# List all the files that will be included in the gem:
+def files
+	@helper.gemspec.files.each do |path|
+		$stdout.puts path
+	end
+end
+
 # Build the gem into the pkg directory.
 def build
-	@built_gem_path ||= @helper.build_gem
-	
-	gemspec = @helper.gemspec
-	
-	$stdout.puts "Your gem contains the following files:"
-	pp gemspec.files
+	@helper.build_gem
 end
 
 # Build and install the gem into system gems.
 # @parameter local [Boolean] only use locally available caches.
 def install(local: false)
-	path = self.build
+	path = @helper.build_gem
 	
-	@helper.install_gem(path, local)
+	arguments = []
+	arguments << "--local" if local
+	
+	@helper.install_gem(*arguments, path: path)
 end
 
-def release(remote: nil)
+def release(tag: true)
 	@helper.guard_clean
 	
-	unless @helper.already_tagged?
-		@helper.tag_version do
-			@helper.git_push(remote)
-		end
+	version = @helper.gemspec.version
+	
+	if tag
+		system("git", "tag", "v#{version}")
+		system("git", "push")
 	end
 	
-	path = self.build
-	
-	if @helper.gem_push?
-		@helper.rubygem_push(path)
-	end
+	path = @helper.build_gem
+	@helper.push_gem(path: path)
 end
