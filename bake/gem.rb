@@ -62,8 +62,9 @@ def release(tag: true)
 	version = @helper.gemspec.version
 	
 	if tag
-		system("git", "tag", "v#{version}")
-		system("git", "push")
+		name = "v#{version}"
+		system("git", "tag", name)
+		system("git", "push", "--tags")
 	end
 	
 	path = @helper.build_gem
