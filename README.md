@@ -6,56 +6,71 @@ Provides bake tasks for common gem release workflows.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-``` ruby
-gem 'bake-gem'
+``` shell
+$ bundle add bake-gem
 ```
-
-And then execute:
-
-    $ bundle install
-
-Or install it yourself as:
-
-    $ gem install bake-gem
 
 ## Usage
 
-### Workflow 1:
+### Local
 
-  - Release commit: Bump (...) version.
-  - Tag version.
-  - Push gem.
+Releasing a gem locally is the most typical process.
 
-### Workflow 2:
+``` shell
+$ bake gem:release:version:(major|minor|patch) gem:release
+```
 
-  - Release branch.
+This will bump the gem version, commit it, build and push the gem, then tag it.
 
-  - Release commit.
+### Automated
 
-  - Merge to master
+Releasing a gem via a automated pipeline is also supported. Locally, create a release branch:
 
-  - Automatic Release.
-    
-      - Tag version.
-      - Push gem.
+``` shell
+$ bake gem:release:branch:(major|minor|patch)
+```
 
-  - Manual Release
-    
-      - Tag version.
-      - Push gem.
+This will create a branch, bump the gem version and commit it. You are then responsible for merging this into master (e.g. using a pull request). Once this is done, to automatically release the gem:
 
-## Development
+``` shell
+$ export RUBYGEMS_HOST=...
+$ export GEM_HOST_API_KEY=...
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+$ bake gem:release
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/\[USERNAME\]/bake-gem.
+1.  Fork it
+2.  Create your feature branch (`git checkout -b my-new-feature`)
+3.  Commit your changes (`git commit -am 'Add some feature'`)
+4.  Push to the branch (`git push origin my-new-feature`)
+5.  Create new Pull Request
+
+## See Also
+
+  - [Bake](https://github.com/ioquatix/bake) — The bake task execution tool.
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+Released under the MIT license.
+
+Copyright, 2020, by [Samuel G. D. Williams](http://www.codeotaku.com).
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
