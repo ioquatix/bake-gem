@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 	spec.license = "MIT"
 	
 	spec.cert_chain  = ['release.cert']
-	spec.signing_key = File.expand_path("~/.gem/release.pem")
+	spec.signing_key = File.expand_path('~/.gem/release.pem')
 	
 	spec.homepage = "https://github.com/ioquatix/bake-gem"
 	
