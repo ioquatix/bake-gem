@@ -63,10 +63,17 @@ def release(tag: true)
 	
 	if tag
 		name = "v#{version}"
+		system("git", "pull", "--tags")
 		system("git", "tag", name)
-		system("git", "push", "--tags")
 	end
 	
-	path = @helper.build_gem
-	@helper.push_gem(path: path)
+	begin
+		path = @helper.build_gem
+		@helper.push_gem(path: path)
+	rescue => error
+		system("git", "tag", "--delete", name)
+		raise
+	end
+	
+	system("git", "push", "--tags")
 end
