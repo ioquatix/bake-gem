@@ -63,7 +63,7 @@ def release(tag: true)
 	
 	if tag
 		name = "v#{version}"
-		system("git", "pull", "--tags")
+		system("git", "fetch", "--all", "--tags")
 		system("git", "tag", name)
 	end
 	
