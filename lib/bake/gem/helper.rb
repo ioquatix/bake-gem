@@ -33,7 +33,7 @@ module Bake
 			
 			def initialize(root = Dir.pwd, gemspec: nil)
 				@root = root
-				@gemspec = gemspec || self.find_gemspec
+				@gemspec = gemspec || find_gemspec
 			end
 			
 			attr :gemspec
