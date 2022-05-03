@@ -75,5 +75,17 @@ def release(tag: true)
 		raise
 	end
 	
-	system("git", "push", "--tags")
+	# If we are on a branch, push, otherwise just push the tags (assuming shallow checkout):
+	if current_branch
+		system("git", "push")
+	else
+		system("git", "push", "--tags")
+	end
+end
+
+private
+
+# Figure out if there is a current branch, if not, return `nil`.
+def current_branch
+	readlines("git", "branch", "--show-current").first&.chomp
 end
