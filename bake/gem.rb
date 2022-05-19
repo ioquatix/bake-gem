@@ -87,5 +87,10 @@ private
 
 # Figure out if there is a current branch, if not, return `nil`.
 def current_branch
-	readlines("git", "branch", "--show-current").first&.chomp
+	# We originally used this but it is not supported by older versions of git.
+	# readlines("git", "branch", "--show-current").first&.chomp
+	
+	readlines("git", "symbolic-ref", "--short", "--quiet", "HEAD").first&.chomp
+rescue
+	nil
 end
