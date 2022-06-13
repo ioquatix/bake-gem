@@ -78,9 +78,9 @@ def release(tag: true)
 	# If we are on a branch, push, otherwise just push the tags (assuming shallow checkout):
 	if current_branch
 		system("git", "push")
-	else
-		system("git", "push", "--tags")
 	end
+	
+	system("git", "push", "--tags")
 end
 
 private
