@@ -44,7 +44,6 @@ end
 # @parameter root [String] The root directory to build the gem into. Defaults to `pkg`.
 # @parameter signing_key [Boolean] Whether to use a signing key.
 def build(root: "pkg", signing_key: nil)
-	pp signing_key: signing_key
 	@helper.build_gem(root: root, signing_key: signing_key)
 end
 
