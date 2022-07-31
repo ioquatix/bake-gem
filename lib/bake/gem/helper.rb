@@ -83,13 +83,22 @@ module Bake
 			end
 			
 			# @parameter root [String] The root path for package files.
+			# @parameter signing_key [String | Nil] The signing key to use for signing the package.
 			# @returns [String] The path to the built gem package.
-			def build_gem(root: "pkg")
+			def build_gem(root: "pkg", signing_key: nil)
 				# Ensure the output directory exists:
 				FileUtils.mkdir_p("pkg")
 				
 				output_path = File.join('pkg', @gemspec.file_name)
 				
+				if signing_key == false
+					@gemspec.signing_key = nil
+				elsif signing_key.is_a?(String)
+					@gemspec.signing_key = signing_key
+				elsif signing_key == true and @gemspec.signing_key.nil?
+					raise ArgumentError, "Signing key is required for signing the gem, but none was specified by the gemspec."
+				end
+
 				::Gem::Package.build(@gemspec, false, false, output_path)
 			end
 			
