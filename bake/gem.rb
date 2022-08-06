@@ -50,7 +50,8 @@ end
 # Build and install the gem into system gems.
 # @parameter local [Boolean] only use locally available caches.
 def install(local: false)
-	path = @helper.build_gem
+	# For installing the gem, don't bother with signinng it:
+	path = @helper.build_gem(signing_key: false)
 	
 	arguments = []
 	arguments << "--local" if local
