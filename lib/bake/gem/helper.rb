@@ -39,7 +39,7 @@ module Bake
 			attr :gemspec
 			
 			def version_path
-				@gemspec&.files.grep(/lib(.*?)version.rb/).first
+				@gemspec&.files.grep(/lib(.*?)\/version.rb/).first
 			end
 			
 			VERSION_PATTERN = /VERSION = ['"](?<value>\d+\.\d+\.\d+)(?<pre>.*?)['"]/
