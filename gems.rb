@@ -15,5 +15,7 @@ group :test do
 	gem "sus"
 	gem "covered"
 	
+	gem "sus-fixtures-console"
+	
 	gem "bake-test"
 end

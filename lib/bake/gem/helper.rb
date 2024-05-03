@@ -93,8 +93,6 @@ module Bake
 				system("gem", "push", path, *arguments)
 			end
 			
-			private
-			
 			def find_gemspec(glob = "*.gemspec")
 				paths = Dir.glob(glob, base: @root).sort
 				

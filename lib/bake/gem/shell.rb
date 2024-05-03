@@ -3,6 +3,9 @@
 # Released under the MIT License.
 # Copyright, 2021-2024, by Samuel Williams.
 
+require 'console'
+require 'console/event/spawn'
+
 module Bake
 	module Gem
 		module Shell
@@ -11,13 +14,15 @@ module Bake
 				
 				begin
 					pid = Process.spawn(*arguments, **options)
-					yield if block_given?
+					return yield if block_given?
 				ensure
 					pid, status = Process.wait2(pid) if pid
 					
 					unless status.success?
 						raise "Failed to execute #{arguments}: #{status}!"
 					end
+					
+					return true
 				end
 			end
 			
@@ -29,7 +34,7 @@ module Bake
 					output.close
 					
 					begin
-						yield input
+						return yield(input)
 					ensure
 						pid, status = Process.wait2(pid)
 						
