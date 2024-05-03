@@ -51,10 +51,10 @@ module Bake
 				
 				if version
 					if block_given?
-						yield version_path, lines, version
-					else
-						File.write(version_path, lines.join)
+						yield version
 					end
+					
+					File.write(version_path, lines.join)
 					
 					return version_path
 				end
