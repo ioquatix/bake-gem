@@ -5,7 +5,6 @@ class ShellTest
 	include Bake::Gem::Shell
 end
 
-
 describe Bake::Gem::Shell do
 	include_context Sus::Fixtures::Console::NullLogger
 	

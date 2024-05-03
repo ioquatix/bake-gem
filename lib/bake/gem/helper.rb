@@ -19,6 +19,7 @@ module Bake
 				@gemspec = gemspec || find_gemspec
 			end
 			
+			attr :root
 			attr :gemspec
 			
 			def version_path
@@ -27,8 +28,8 @@ module Bake
 			
 			VERSION_PATTERN = /VERSION = ['"](?<value>\d+\.\d+\.\d+)(?<pre>.*?)['"]/
 			
-			def update_version(bump)
-				return unless version_path = self.version_path
+			def update_version(bump, version_path = self.version_path)
+				return false unless version_path
 				
 				lines = File.readlines(version_path)
 				version = nil
@@ -49,20 +50,24 @@ module Bake
 				end
 				
 				if version
-					yield version if block_given?
-					
-					File.write(version_path, lines.join)
+					if block_given?
+						yield version_path, lines, version
+					else
+						File.write(version_path, lines.join)
+					end
 					
 					return version_path
 				end
 			end
 			
 			def guard_clean
-				lines = readlines("git", "status", "--porcelain")
+				lines = readlines("git", "status", "--porcelain", chdir: @root)
 				
 				if lines.any?
 					raise "Repository has uncommited changes!\n#{lines.join('')}"
 				end
+				
+				return true
 			end
 			
 			# @parameter root [String] The root path for package files.
@@ -81,7 +86,7 @@ module Bake
 				elsif signing_key == true and @gemspec.signing_key.nil?
 					raise ArgumentError, "Signing key is required for signing the gem, but none was specified by the gemspec."
 				end
-
+				
 				::Gem::Package.build(@gemspec, false, false, output_path)
 			end
 			
