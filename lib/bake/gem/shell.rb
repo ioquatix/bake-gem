@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021, by Samuel Williams.
+# Copyright, 2021-2024, by Samuel Williams.
 
 module Bake
 	module Gem
 		module Shell
 			def system(*arguments, **options)
-				Console.logger.info(self, Console::Event::Spawn.for(*arguments, **options))
+				Console::Event::Spawn.for(*arguments, **options).emit(self)
 				
 				begin
 					pid = Process.spawn(*arguments, **options)
@@ -22,7 +22,7 @@ module Bake
 			end
 			
 			def execute(*arguments, **options)
-				Console.logger.info(self, Console::Event::Spawn.for(*arguments, **options))
+				Console::Event::Spawn.for(*arguments, **options).emit(self)
 				
 				IO.pipe do |input, output|
 					pid = Process.spawn(*arguments, out: output, **options)
