@@ -70,6 +70,17 @@ module Bake
 				return true
 			end
 			
+			def guard_default_branch
+				branch = readlines("git", "branch", "--show-current", chdir: @root).first.chomp
+				remote_head_branch = readlines("git", "symbolic-ref", "refs/remotes/origin/HEAD", chdir: @root).first.chomp.split('/').last
+				
+				if branch != remote_head_branch
+					raise "Current branch is not the default branch: #{branch} != #{remote_head_branch}"
+				end
+				
+				return true
+			end
+			
 			# @parameter root [String] The root path for package files.
 			# @parameter signing_key [String | Nil] The signing key to use for signing the package.
 			# @returns [String] The path to the built gem package.

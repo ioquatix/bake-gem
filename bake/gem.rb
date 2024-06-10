@@ -44,6 +44,7 @@ end
 
 def release(tag: true)
 	@helper.guard_clean
+	@helper.guard_default_branch
 	
 	version = @helper.gemspec.version
 	
