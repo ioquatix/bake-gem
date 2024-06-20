@@ -74,11 +74,7 @@ module Bake
 				branch = readlines("git", "branch", "--show-current", chdir: @root).first.chomp
 				remote_head_branch = readlines("git", "symbolic-ref", "refs/remotes/origin/HEAD", chdir: @root).first.chomp.split('/').last
 				
-				if branch != remote_head_branch
-					raise "Current branch is not the default branch: #{branch} != #{remote_head_branch}"
-				end
-				
-				return true
+				return branch == remote_head_branch
 			end
 			
 			# @parameter root [String] The root path for package files.

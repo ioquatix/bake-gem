@@ -44,7 +44,10 @@ end
 
 def release(tag: true)
 	@helper.guard_clean
-	@helper.guard_default_branch
+	
+	unless @helper.guard_default_branch
+		Console.warn(self, "Not on default branch.")
+	end
 	
 	version = @helper.gemspec.version
 	
