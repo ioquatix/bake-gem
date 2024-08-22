@@ -42,6 +42,8 @@ def install(local: false)
 	@helper.install_gem(*arguments, path: path)
 end
 
+# Release the gem by building it, pushing it to the server, and tagging the release.
+# @parameter tag [Boolean] Whether to tag the release.
 def release(tag: true)
 	@helper.guard_clean
 	
