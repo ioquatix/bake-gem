@@ -10,6 +10,10 @@ Please see the [project documentation](https://ioquatix.github.io/bake-gem/) for
 
   - [Getting Started](https://ioquatix.github.io/bake-gem/guides/getting-started/index) - This guide explains how to use `bake-gem` to release gems.
 
+## See Also
+
+  - [Bake](https://github.com/ioquatix/bake) — The bake task execution tool.
+
 ## Contributing
 
 We welcome contributions to this project.
@@ -27,7 +31,3 @@ This project uses the [Developer Certificate of Origin](https://developercertifi
 ### Contributor Covenant
 
 This project is governed by the [Contributor Covenant](https://www.contributor-covenant.org/). All contributors and participants agree to abide by its terms.
-
-## See Also
-
-  - [Bake](https://github.com/ioquatix/bake) — The bake task execution tool.
