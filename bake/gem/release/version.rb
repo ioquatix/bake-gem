@@ -38,6 +38,8 @@ def increment(bump, message: "Bump version.")
 		
 		# Ensure that any subsequent tasks use the correct version!
 		gemspec.version = ::Gem::Version.new(version_string)
+		
+		after_increment(version)
 	end
 end
 
@@ -54,9 +56,15 @@ def commit(bump, message: "Bump version.")
 	version_path = increment(bump, message: message)
 	
 	if version_path
-		system("git", "add", version_path, chdir: context.root)
+		system("git", "add", "--all", chdir: context.root)
 		system("git", "commit", "-m", message, chdir: context.root)
 	else
 		raise "Could not find version number!"
 	end
+end
+
+protected
+
+def after_increment(version)
+	context['after_gem_release_version_increment']&.call(version)
 end
