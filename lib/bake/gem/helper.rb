@@ -11,6 +11,64 @@ require_relative 'shell'
 
 module Bake
 	module Gem
+		class Version
+			LINE_PATTERN = /VERSION = ['"](?<version>(?<parts>\d+\.\d+\.\d+)(-(?<suffix>.*?))?)['"]/
+			
+			# If the line contains a version constant, update it using the provided block.
+			def self.update_version(line)
+				if match = line.match(LINE_PATTERN)
+					parts = match[:parts].split(/\./).map(&:to_i)
+					suffix = match[:suffix]
+					
+					version = self.new(parts, suffix)
+					
+					yield version
+					
+					line.sub!(match[:version], version.join)
+				end
+			end
+			
+			def initialize(parts, suffix)
+				@parts = parts
+				@suffix = suffix
+			end
+			
+			def release?
+				@suffix.nil?
+			end
+			
+			# Join all parts together to form a version string.
+			def join
+				if @suffix
+					return "#{@parts.join('.')}-#{@suffix}"
+				else
+					return @parts.join('.')
+				end
+			end
+			
+			# The version string with a "v" prefix.
+			def to_s
+				"v#{join}"
+			end
+			
+			def increment(bump)
+				bump.each_with_index do |increment, index|
+					if index > @parts.size
+						@suffix = bump[index..-1].join('.')
+						break
+					end
+					
+					if increment == 1
+						@parts[index] += 1
+					elsif increment == 0
+						@parts[index] = 0
+					end
+				end
+				
+				return self
+			end
+		end
+		
 		class Helper
 			include Shell
 			
@@ -26,35 +84,24 @@ module Bake
 				@gemspec&.files.grep(/lib(.*?)\/version.rb/).first
 			end
 			
-			VERSION_PATTERN = /VERSION = ['"](?<value>\d+\.\d+\.\d+)(?<pre>.*?)['"]/
-			
 			def update_version(bump, version_path = self.version_path)
 				return false unless version_path
 				
 				lines = File.readlines(version_path)
-				version = nil
+				new_version = nil
 				
 				lines.each do |line|
-					if match = line.match(VERSION_PATTERN)
-						version = match[:value].split(/\./).map(&:to_i)
-						bump.each_with_index do |increment, index|
-							if increment == 1
-								version[index] += 1
-							elsif increment == 0
-								version[index] = 0
-							end
-						end
-						
-						line.sub!(match[:value], version.join('.'))
+					Version.update_version(line) do |version|
+						new_version = version.increment(bump)
 					end
 				end
 				
-				if version
-					if block_given?
-						yield version
-					end
-					
+				if new_version
 					File.write(version_path, lines.join)
+					
+					if block_given?
+						yield new_version
+					end
 					
 					return version_path
 				end
