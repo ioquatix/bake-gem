@@ -12,7 +12,11 @@ Please see the [project documentation](https://ioquatix.github.io/bake-gem/) for
 
 ## Releases
 
-There are no documented releases.
+Please see the [project releases](https://ioquatix.github.io/bake-gem/releases/index) for all releases.
+
+### v0.11.0
+
+  - Improved bake task return values.
 
 ## See Also
 
