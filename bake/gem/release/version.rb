@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2024, by Samuel Williams.
+# Copyright, 2021-2025, by Samuel Williams.
 
-require_relative '../../../lib/bake/gem/shell'
+require_relative "../../../lib/bake/gem/shell"
 
 include Bake::Gem::Shell
 
@@ -27,7 +27,7 @@ end
 # @parameter bump [Array(Integer | Nil)] the version bump to apply before publishing, e.g. `0,1,0` to increment minor version number.
 # @parameter message [String] the git commit message to use.
 def increment(bump, message: "Bump version.")
-	release = context.lookup('gem:release')
+	release = context.lookup("gem:release")
 	helper = release.instance.helper
 	gemspec = helper.gemspec
 	
@@ -46,7 +46,7 @@ end
 # @parameter bump [Array(Integer | Nil)] the version bump to apply before publishing, e.g. `0,1,0` to increment minor version number.
 # @parameter message [String] the git commit message to use.
 def commit(bump, message: "Bump version.")
-	release = context.lookup('gem:release')
+	release = context.lookup("gem:release")
 	helper = release.instance.helper
 	
 	helper.guard_clean
@@ -64,5 +64,5 @@ end
 protected
 
 def after_increment(version)
-	context['after_gem_release_version_increment']&.call(version)
+	context["after_gem_release_version_increment"]&.call(version)
 end

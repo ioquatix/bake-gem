@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2024, by Samuel Williams.
+# Copyright, 2021-2025, by Samuel Williams.
 
-require 'console'
-require 'console/event/spawn'
+require "console"
+require "console/event/spawn"
 
 module Bake
 	module Gem

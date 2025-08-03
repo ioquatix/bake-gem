@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2023, by Samuel Williams.
+# Copyright, 2021-2025, by Samuel Williams.
 
-require 'rubygems'
-require 'rubygems/package'
-require 'fileutils'
+require "rubygems"
+require "rubygems/package"
+require "fileutils"
 
-require_relative 'shell'
+require_relative "shell"
 
 module Bake
 	module Gem
@@ -42,7 +42,7 @@ module Bake
 				if @suffix
 					return "#{@parts.join('.')}-#{@suffix}"
 				else
-					return @parts.join('.')
+					return @parts.join(".")
 				end
 			end
 			
@@ -54,7 +54,7 @@ module Bake
 			def increment(bump)
 				bump.each_with_index do |increment, index|
 					if index > @parts.size
-						@suffix = bump[index..-1].join('.')
+						@suffix = bump[index..-1].join(".")
 						break
 					end
 					
@@ -124,7 +124,7 @@ module Bake
 				# Ensure the output directory exists:
 				FileUtils.mkdir_p("pkg")
 				
-				output_path = File.join('pkg', @gemspec.file_name)
+				output_path = File.join("pkg", @gemspec.file_name)
 				
 				if signing_key == false
 					@gemspec.signing_key = nil

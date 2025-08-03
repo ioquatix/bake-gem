@@ -1,16 +1,21 @@
-require 'bake/gem/helper'
-require 'sus/fixtures/console/null_logger'
+# frozen_string_literal: true
 
-require 'tmpdir'
+# Released under the MIT License.
+# Copyright, 2024-2025, by Samuel Williams.
+
+require "bake/gem/helper"
+require "sus/fixtures/console/null_logger"
+
+require "tmpdir"
 
 describe Bake::Gem::Helper do
 	let(:helper) {subject.new}
 	
-	it 'can find the version path' do
+	it "can find the version path" do
 		expect(helper.version_path).to be == "lib/bake/gem/version.rb"
 	end
 	
-	with 'repository' do
+	with "repository" do
 		let(:helper) {@helper}
 		
 		def around
@@ -22,7 +27,7 @@ describe Bake::Gem::Helper do
 			end
 		end
 		
-		it 'can update the version' do
+		it "can update the version" do
 			version_path = File.expand_path("version.rb", helper.root)
 			File.write(version_path, "VERSION = '0.0.0'\n")
 			
@@ -31,18 +36,18 @@ describe Bake::Gem::Helper do
 			expect(File.read(version_path)).to be == "VERSION = '1.1.1'\n"
 		end
 		
-		it 'can guard clean' do
+		it "can guard clean" do
 			expect(helper.guard_clean).to be_truthy
 		end
 		
-		it 'raises an error if repository is dirty' do
+		it "raises an error if repository is dirty" do
 			File.write(File.expand_path("readme.md", helper.root), "Hello, World!")
 			
 			expect{helper.guard_clean}.to raise_exception(RuntimeError)
 		end
 	end
 	
-	it 'can build gem' do
+	it "can build gem" do
 		package_path = helper.build_gem(signing_key: false)
 		expect(File).to be(:exist?, package_path)
 	end

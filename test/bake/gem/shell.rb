@@ -1,5 +1,10 @@
-require 'bake/gem/shell'
-require 'sus/fixtures/console/null_logger'
+# frozen_string_literal: true
+
+# Released under the MIT License.
+# Copyright, 2024-2025, by Samuel Williams.
+
+require "bake/gem/shell"
+require "sus/fixtures/console/null_logger"
 
 class ShellTest
 	include Bake::Gem::Shell
@@ -10,7 +15,7 @@ describe Bake::Gem::Shell do
 	
 	let(:shell) {ShellTest.new}
 	
-	with '#system' do
+	with "#system" do
 		it "can run shell commands" do
 			expect(shell.system("true")).to be_truthy
 		end
@@ -20,8 +25,8 @@ describe Bake::Gem::Shell do
 		end
 	end
 	
-	with '#execute' do
-		it 'can run shell commands and capture output' do
+	with "#execute" do
+		it "can run shell commands and capture output" do
 			shell.execute("echo", "Hello, World!") do |input|
 				expect(input.read).to be == "Hello, World!\n"
 			end
@@ -32,8 +37,8 @@ describe Bake::Gem::Shell do
 		end
 	end
 	
-	with '#readlines' do
-		it 'can run shell commands and capture output as lines' do
+	with "#readlines" do
+		it "can run shell commands and capture output as lines" do
 			expect(shell.readlines("echo", "Hello, World!")).to be == ["Hello, World!\n"]
 		end
 	end

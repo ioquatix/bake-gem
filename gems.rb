@@ -10,6 +10,7 @@ gemspec
 group :maintenance, optional: true do
 	# gem "bake-gem"
 	gem "bake-modernize"
+	gem "bake-releases"
 	
 	gem "utopia-project"
 end
@@ -17,6 +18,10 @@ end
 group :test do
 	gem "sus"
 	gem "covered"
+	gem "decode"
+	
+	gem "rubocop"
+	gem "rubocop-socketry"
 	
 	gem "sus-fixtures-console"
 	
