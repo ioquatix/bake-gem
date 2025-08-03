@@ -42,4 +42,10 @@ def commit(bump, message: "Bump version.")
 	else
 		raise "Could not find version number!"
 	end
+	
+	return {
+		version: gemspec.version,
+		version_path: version_path,
+		branch: "release-v#{gemspec.version}",
+	}
 end

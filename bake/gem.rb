@@ -40,6 +40,12 @@ def install(local: false)
 	arguments << "--local" if local
 	
 	@helper.install_gem(*arguments, path: path)
+	
+	return {
+		name: @helper.gemspec.name,
+		version: @helper.gemspec.version,
+		package_path: path,
+	}
 end
 
 # Release the gem by building it, pushing it to the server, and tagging the release.
@@ -69,6 +75,13 @@ def release(tag: true)
 	end
 	
 	system("git", "push", "--tags")
+	
+	return {
+		name: @helper.gemspec.name,
+		version: @helper.gemspec.version,
+		package_path: path,
+		tag: name,
+	}
 end
 
 private

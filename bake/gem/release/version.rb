@@ -39,6 +39,11 @@ def increment(bump, message: "Bump version.")
 		
 		after_increment(version)
 	end
+	
+	return {
+		version: gemspec.version,
+		version_path: helper.version_path,
+	}
 end
 
 # Increments the version and commits the changes on the current branch.
@@ -59,6 +64,11 @@ def commit(bump, message: "Bump version.")
 	else
 		raise "Could not find version number!"
 	end
+	
+	return {
+		version: helper.gemspec.version,
+		version_path: version_path,
+	}
 end
 
 protected
