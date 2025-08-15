@@ -18,9 +18,7 @@ attr :helper
 
 # List all the files that will be included in the gem:
 def files
-	@helper.gemspec.files.each do |path|
-		$stdout.puts path
-	end
+	@helper.gemspec.files
 end
 
 # Build the gem into the pkg directory.
