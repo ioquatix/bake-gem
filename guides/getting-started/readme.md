@@ -32,13 +32,13 @@ Before using `bake-gem`, ensure you have:
 The most typical process for releasing a gem locally:
 
 ``` bash
-$ bake gem:release:version:patch gem:release
+$ bake gem:release:patch
 ```
 
-This command will:
+This single command will:
 1. **Guard against consecutive version bumps** - Prevents accidentally bumping version twice
 2. **Check repository cleanliness** - Ensures no uncommitted changes
-3. **Increment the version** - Updates your version file (patch/minor/major)
+3. **Increment the patch version** - Updates your version file (e.g., 1.0.0 → 1.0.1)
 4. **Commit the version change** - Creates a commit with the version bump
 5. **Build the gem in a clean worktree** - Isolates the build process
 6. **Push to RubyGems** - Publishes your gem
@@ -46,17 +46,27 @@ This command will:
 
 ### Version Increment Options
 
-Choose the appropriate version increment:
+Choose the appropriate version increment for a complete release:
 
 ``` bash
 # For bug fixes (1.0.0 -> 1.0.1)
-$ bake gem:release:version:patch gem:release
+$ bake gem:release:patch
 
 # For new features (1.0.0 -> 1.1.0)
-$ bake gem:release:version:minor gem:release
+$ bake gem:release:minor
 
 # For breaking changes (1.0.0 -> 2.0.0)
-$ bake gem:release:version:major gem:release
+$ bake gem:release:major
+```
+
+For more control, you can also use the traditional two-step process:
+
+``` bash
+# Step 1: Bump version and commit
+$ bake gem:release:version:patch  # or minor/major
+
+# Step 2: Build and release
+$ bake gem:release
 ```
 
 ## Advanced Workflows
@@ -157,8 +167,8 @@ $ git status
 # 2. Run tests
 $ bundle exec rake test  # or your test command
 
-# 3. Release with patch version increment
-$ bake gem:release:version:patch gem:release
+# 3. Release with patch version increment (single command)
+$ bake gem:release:patch
 
 # Output:
 # Updated version: v1.2.4
@@ -184,45 +194,3 @@ $ git checkout main
 $ git pull
 $ bake gem:release
 ```
-
-## Troubleshooting
-
-### Common Issues
-
-**"Repository has uncommitted changes"**
-```bash
-$ git status  # Check what's uncommitted
-$ git add .   # Stage changes
-$ git commit -m "Prepare for release"  # Or stash them
-```
-
-**"Last commit appears to be a version bump"**
-```bash
-# Make some changes first, or use --force if intentional
-$ git log -1  # Check the last commit message
-```
-
-**"Multiple gemspecs found"**
-```bash
-# Specify which gemspec to use or remove extras
-$ ls *.gemspec
-```
-
-**"No version file found"**
-```bash
-# Ensure your version file follows the expected pattern:
-# VERSION = "1.0.0"
-```
-
-### Getting Help
-
-List all available gem commands:
-``` bash
-$ bake list | grep gem
-```
-
-Get help for specific commands:
-``` bash
-$ bake gem:release --help
-```
-````
