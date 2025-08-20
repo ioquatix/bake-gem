@@ -62,10 +62,10 @@ def release(tag: true)
 	end
 	
 	begin
-		path = @helper.build_gem
+		path = @helper.build_gem_in_worktree
 		@helper.push_gem(path: path)
 	rescue => error
-		system("git", "tag", "--delete", name)
+		system("git", "tag", "--delete", name) if tag
 		raise
 	end
 	
