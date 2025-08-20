@@ -3,10 +3,6 @@
 # Released under the MIT License.
 # Copyright, 2021-2025, by Samuel Williams.
 
-require_relative "../../../lib/bake/gem/shell"
-
-include Bake::Gem::Shell
-
 # Increment the patch number of the current version.
 def patch
 	commit([nil, nil, 1], message: "Bump patch version.")
@@ -36,9 +32,7 @@ def commit(bump, message: "Bump version.")
 	version_path = context.lookup("gem:release:version:increment").call(bump, message: message)
 	
 	if version_path
-		system("git", "checkout", "-b", "release-v#{gemspec.version}")
-		system("git", "add", version_path, chdir: context.root)
-		system("git", "commit", "-m", message, chdir: context.root)
+		branch_name = helper.create_release_branch(version_path, message: message)
 	else
 		raise "Could not find version number!"
 	end
@@ -46,6 +40,6 @@ def commit(bump, message: "Bump version.")
 	return {
 		version: gemspec.version,
 		version_path: version_path,
-		branch: "release-v#{gemspec.version}",
+		branch: branch_name,
 	}
 end

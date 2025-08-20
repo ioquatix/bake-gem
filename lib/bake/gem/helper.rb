@@ -243,6 +243,71 @@ module Bake
 				end
 			end
 			
+			# Create a release branch, add the version file, and commit the changes.
+			# @parameter version_path [String] The path to the version file that was updated.
+			# @parameter message [String] The commit message to use.
+			# @returns [String] The name of the created branch.
+			def create_release_branch(version_path, message: "Bump version.")
+				branch_name = "release-v#{@gemspec.version}"
+				
+				system("git", "checkout", "-b", branch_name, chdir: @root)
+				system("git", "add", version_path, chdir: @root)
+				system("git", "commit", "-m", message, chdir: @root)
+				
+				return branch_name
+			end
+			
+			# Commit version changes to the current branch.
+			# @parameter message [String] The commit message to use.
+			def commit_version_changes(message: "Bump version.")
+				system("git", "add", "--all", chdir: @root)
+				system("git", "commit", "-m", message, chdir: @root)
+			end
+			
+			# Fetch remote tags and create a release tag for the specified version.
+			# @parameter tag [Boolean] Whether to tag the release.
+			# @parameter version [String] The version to tag.
+			# @returns [String | Nil] The tag name if created, nil otherwise.
+			def create_release_tag(tag: true, version:)
+				tag_name = nil
+				
+				if tag
+					tag_name = "v#{version}"
+					system("git", "fetch", "--all", "--tags", chdir: @root)
+					system("git", "tag", tag_name, chdir: @root)
+				end
+				
+				return tag_name
+			end
+			
+			# Delete a git tag.
+			# @parameter tag_name [String] The name of the tag to delete.
+			def delete_git_tag(tag_name)
+				system("git", "tag", "--delete", tag_name, chdir: @root)
+			end
+			
+			# Push changes and tags to the remote repository.
+			# @parameter current_branch [String | Nil] The current branch name, or nil if not on a branch.
+			def push_release(current_branch: nil)
+				# If we are on a branch, push, otherwise just push the tags (assuming shallow checkout):
+				if current_branch
+					system("git", "push", chdir: @root)
+				end
+				
+				system("git", "push", "--tags", chdir: @root)
+			end
+			
+			# Figure out if there is a current branch, if not, return `nil`.
+			# @returns [String | Nil] The current branch name, or nil if not on a branch.
+			def current_branch
+				# We originally used this but it is not supported by older versions of git.
+				# readlines("git", "branch", "--show-current").first&.chomp
+				
+				readlines("git", "symbolic-ref", "--short", "--quiet", "HEAD", chdir: @root).first&.chomp
+			rescue CommandExecutionError
+				nil
+			end
+			
 			# Find a gemspec file in the root directory.
 			# @parameter glob [String] The glob pattern to use for finding gemspec files.
 			# @returns [Gem::Specification | Nil] The loaded gemspec, or nil if none found.

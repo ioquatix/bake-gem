@@ -3,15 +3,12 @@
 # Released under the MIT License.
 # Copyright, 2021-2025, by Samuel Williams.
 
-require_relative "../lib/bake/gem/helper"
-require_relative "../lib/bake/gem/shell"
-
-include Bake::Gem::Shell
-
 # Initialize the gem context with helper for gem operations.
 # @parameter context [Bake::Context] The bake execution context.
 def initialize(context)
 	super(context)
+	
+	require_relative "../lib/bake/gem/helper"
 	
 	@helper = Bake::Gem::Helper.new(context.root)
 end
@@ -54,44 +51,24 @@ def release(tag: true)
 	@helper.guard_clean
 	
 	version = @helper.gemspec.version
+	current_branch = @helper.current_branch
 	
-	if tag
-		name = "v#{version}"
-		system("git", "fetch", "--all", "--tags")
-		system("git", "tag", name)
-	end
+	tag_name = @helper.create_release_tag(tag: tag, version: version)
 	
 	begin
 		path = @helper.build_gem_in_worktree
 		@helper.push_gem(path: path)
 	rescue => error
-		system("git", "tag", "--delete", name) if tag
+		@helper.delete_git_tag(tag_name) if tag_name
 		raise
 	end
 	
-	# If we are on a branch, push, otherwise just push the tags (assuming shallow checkout):
-	if current_branch
-		system("git", "push")
-	end
-	
-	system("git", "push", "--tags")
+	@helper.push_release(current_branch: current_branch)
 	
 	return {
 		name: @helper.gemspec.name,
 		version: @helper.gemspec.version,
 		package_path: path,
-		tag: name,
+		tag: tag_name,
 	}
-end
-
-private
-
-# Figure out if there is a current branch, if not, return `nil`.
-def current_branch
-	# We originally used this but it is not supported by older versions of git.
-	# readlines("git", "branch", "--show-current").first&.chomp
-	
-	readlines("git", "symbolic-ref", "--short", "--quiet", "HEAD").first&.chomp
-rescue
-	nil
 end
