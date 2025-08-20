@@ -6,6 +6,7 @@
 require "rubygems"
 require "rubygems/package"
 require "fileutils"
+require "tmpdir"
 
 require_relative "shell"
 
@@ -63,13 +64,13 @@ module Bake
 			def increment(bump)
 				bump.each_with_index do |increment, index|
 					if index > @parts.size
-						@suffix = bump[index..-1].join(".")
+						@suffix = bump[index..].join(".")
 						break
 					end
 					
 					if increment == 1
 						@parts[index] += 1
-					elsif increment == 0
+					elsif increment.zero?
 						@parts[index] = 0
 					end
 				end
@@ -99,7 +100,9 @@ module Bake
 			# Find the path to the version.rb file in the gem.
 			# @returns [String | Nil] The path to the version file, or nil if not found.
 			def version_path
-				@gemspec&.files.grep(/lib(.*?)\/version.rb/).first
+				if @gemspec
+					@gemspec.files.grep(/lib(.*?)\/version.rb/).first
+				end
 			end
 			
 			# Update the version number in the version file according to the bump specification.
@@ -147,9 +150,9 @@ module Bake
 			# @returns [String] The path to the built gem package.
 			def build_gem(root: "pkg", signing_key: nil)
 				# Ensure the output directory exists:
-				FileUtils.mkdir_p("pkg")
+				FileUtils.mkdir_p(root)
 				
-				output_path = File.join("pkg", @gemspec.file_name)
+				output_path = File.join(root, @gemspec.file_name)
 				
 				if signing_key == false
 					@gemspec.signing_key = nil
@@ -176,6 +179,44 @@ module Bake
 				system("gem", "push", path, *arguments)
 			end
 			
+			# Build the gem in a clean worktree for better isolation
+			# @parameter root [String] The root path for package files.
+			# @parameter signing_key [String | Nil] The signing key to use for signing the package.
+			# @returns [String] The path to the built gem package.
+			def build_gem_in_worktree(root: "pkg", signing_key: nil)
+				original_pkg_path = File.join(@root, root)
+				
+				# Create a unique temporary path for the worktree
+				timestamp = Time.now.strftime("%Y%m%d-%H%M%S-%N")
+				worktree_path = File.join(Dir.tmpdir, "bake-gem-build-#{timestamp}")
+				
+				begin
+					# Create worktree from current HEAD
+					unless system("git", "worktree", "add", worktree_path, "HEAD", chdir: @root)
+						raise "Failed to create git worktree. Make sure you have at least one commit in the repository."
+					end
+					
+					# Create helper for the worktree
+					worktree_helper = self.class.new(worktree_path)
+					
+					# Build gem in the worktree using a temporary directory
+					worktree_pkg_path = worktree_helper.build_gem(signing_key: signing_key)
+					
+					# Ensure output directory exists in original location
+					FileUtils.mkdir_p(original_pkg_path)
+					
+					# Copy the built gem back to original location
+					gem_filename = File.basename(worktree_pkg_path)
+					output_path = File.join(original_pkg_path, gem_filename)
+					FileUtils.cp(worktree_pkg_path, output_path)
+					
+					output_path
+				ensure
+					# Clean up the worktree
+					system("git", "worktree", "remove", worktree_path, "--force", chdir: @root)
+				end
+			end
+			
 			# Find a gemspec file in the root directory.
 			# @parameter glob [String] The glob pattern to use for finding gemspec files.
 			# @returns [Gem::Specification | Nil] The loaded gemspec, or nil if none found.
@@ -188,7 +229,7 @@ module Bake
 				end
 				
 				if path = paths.first
-					return ::Gem::Specification.load(path)
+					return ::Gem::Specification.load(File.expand_path(path, @root))
 				end
 			end
 		end

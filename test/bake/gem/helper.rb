@@ -45,6 +45,32 @@ describe Bake::Gem::Helper do
 			
 			expect{helper.guard_clean}.to raise_exception(RuntimeError)
 		end
+		
+		it "can build gem in worktree" do
+			# Create a minimal gemspec for testing
+			gemspec_content = <<~GEMSPEC
+				Gem::Specification.new do |spec|
+					spec.name = "test-gem"
+					spec.version = "1.0.0"
+					spec.authors = ["Test"]
+					spec.email = ["test@example.com"]
+					spec.summary = "Test gem"
+					spec.files = Dir.glob("**/*")
+				end
+			GEMSPEC
+			
+			File.write(File.expand_path("test-gem.gemspec", helper.root), gemspec_content)
+			
+			# Create an initial commit so we have a HEAD to create worktree from
+			system("git", "add", ".", chdir: helper.root)
+			system("git", "-c", "user.email=test@test.com", "-c", "user.name=Test User", "commit", "-m", "Initial commit", chdir: helper.root)
+			
+			package_path = helper.build_gem_in_worktree(signing_key: false)
+			expect(File).to be(:exist?, package_path)
+			
+			# Verify the gem was built in the original location, not worktree
+			expect(package_path).to be =~ /^#{Regexp.escape(helper.root)}/
+		end
 	end
 	
 	it "can build gem" do
