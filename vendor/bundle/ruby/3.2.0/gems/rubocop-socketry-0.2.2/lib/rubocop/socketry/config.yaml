@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+# This is the default configuration file for rubocop-ioquatix.
+# You can override any of these settings in your .rubocop.yml file.
+
+Layout/ConsistentBlankLineIndentation:
+  Description: "Ensures that blank lines have the same indentation as the previous non-blank line."
+  Enabled: true
+  VersionAdded: "0.1.0" 

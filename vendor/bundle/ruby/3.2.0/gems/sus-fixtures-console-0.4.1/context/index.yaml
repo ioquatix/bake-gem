@@ -1,0 +1,13 @@
+# Automatically generated context index for Utopia::Project guides.
+# Do not edit then files in this directory directly, instead edit the guides and then run `bake utopia:project:agent:context:update`.
+---
+description: Test fixtures for capturing Console output.
+metadata:
+  documentation_uri: https://socketry.github.io/sus-fixtures-console/
+  funding_uri: https://github.com/sponsors/ioquatix/
+  source_code_uri: https://github.com/socketry/sus-fixtures-console.git
+files:
+- path: getting-started.md
+  title: Getting Started
+  description: This guide explains how to use the `Sus::Fixtures::Console` gem to
+    redirect console logging output during tests.
