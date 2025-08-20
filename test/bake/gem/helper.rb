@@ -47,7 +47,12 @@ describe Bake::Gem::Helper do
 		end
 		
 		it "can build gem in worktree" do
-			# Create a minimal gemspec for testing
+			# Create some dummy files:
+			FileUtils.mkdir_p(File.expand_path("lib", helper.root))
+			File.write(File.expand_path("lib/test_gem.rb", helper.root), "# Test gem main file")
+			File.write(File.expand_path("readme.md", helper.root), "# Test Gem")
+			
+			# Create a minimal gemspec for testing that uses git to find files
 			gemspec_content = <<~GEMSPEC
 				Gem::Specification.new do |spec|
 					spec.name = "test-gem"
@@ -69,7 +74,7 @@ describe Bake::Gem::Helper do
 			expect(File).to be(:exist?, package_path)
 			
 			# Verify the gem was built in the original location, not worktree
-			expect(package_path).to be =~ /^#{Regexp.escape(helper.root)}/
+			expect(package_path).to be(:start_with?, helper.root)
 		end
 	end
 	
