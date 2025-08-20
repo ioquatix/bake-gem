@@ -4,6 +4,5 @@
 /gems.locked
 /.covered.db
 /external
-/vendor
 
 /.github/workflows/test-external.yaml
