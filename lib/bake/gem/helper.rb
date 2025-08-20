@@ -226,16 +226,8 @@ module Bake
 					# Create helper for the worktree
 					worktree_helper = self.class.new(worktree_path)
 					
-					# Build gem in the worktree using a temporary directory
-					worktree_pkg_path = worktree_helper.build_gem(signing_key: signing_key)
-					
-					# Ensure output directory exists in original location
-					FileUtils.mkdir_p(original_pkg_path)
-					
-					# Copy the built gem back to original location
-					gem_filename = File.basename(worktree_pkg_path)
-					output_path = File.join(original_pkg_path, gem_filename)
-					FileUtils.cp(worktree_pkg_path, output_path)
+					# Build gem directly into the target pkg directory
+					output_path = worktree_helper.build_gem(root: original_pkg_path, signing_key: signing_key)
 					
 					output_path
 				ensure
