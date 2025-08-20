@@ -4,3 +4,10 @@
 # Copyright, 2021-2024, by Samuel Williams.
 
 require_relative "gem/version"
+
+# @namespace
+module Bake
+	# @namespace
+	module Gem
+	end
+end

@@ -9,10 +9,7 @@ require "fileutils"
 
 require_relative "shell"
 
-# @namespace
 module Bake
-	# @namespace
-	# @namespace
 	module Gem
 		# Represents a gem version with support for parsing and incrementing version numbers.
 		class Version

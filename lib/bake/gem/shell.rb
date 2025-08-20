@@ -6,11 +6,8 @@
 require "console"
 require "console/event/spawn"
 
-# @namespace
 module Bake
-	# @namespace
 	module Gem
-		# Provides shell command execution methods with proper logging and error handling.
 		# Provides shell command execution methods with proper logging and error handling.
 		module Shell
 			# Execute a system command with logging and error handling.
