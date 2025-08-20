@@ -23,6 +23,9 @@ describe Bake::Gem::Helper do
 				@helper = subject.new(root)
 				
 				system("git", "init", chdir: root)
+				system("git", "config", "user.email", "test@test.com", chdir: root)
+				system("git", "config", "user.name", "Test User", chdir: root)
+				
 				yield
 			end
 		end
@@ -34,6 +37,30 @@ describe Bake::Gem::Helper do
 			helper.update_version([1, 1, 1], version_path)
 			
 			expect(File.read(version_path)).to be == "VERSION = '1.1.1'\n"
+		end
+		
+		it "prevents consecutive version bumps" do
+			version_path = File.expand_path("version.rb", helper.root)
+			File.write(version_path, "VERSION = '0.0.0'\n")
+			
+			# Create initial commit
+			system("git", "add", ".", chdir: helper.root)
+			system("git", "commit", "-m", "Initial version", chdir: helper.root)
+			
+			# Create a version bump commit
+			system("git", "commit", "--allow-empty", "-m", "Bump patch version.", chdir: helper.root)
+			
+			# Attempting another version bump should fail
+			expect{helper.update_version([0, 0, 1], version_path)}.to raise_exception(RuntimeError, message: be =~ /Last commit appears to be a version bump/)
+		end
+		
+		it "allows version bump when there are no commits (handles exit code 128)" do
+			version_path = File.expand_path("version.rb", helper.root)
+			File.write(version_path, "VERSION = '0.0.0'\n")
+			
+			# Don't create any commits, so git log will exit with 128
+			# This should not raise an error and should allow version bump
+			expect{helper.update_version([0, 0, 1], version_path)}.not.to raise_exception
 		end
 		
 		it "can guard clean" do
@@ -68,7 +95,7 @@ describe Bake::Gem::Helper do
 			
 			# Create an initial commit so we have a HEAD to create worktree from
 			system("git", "add", ".", chdir: helper.root)
-			system("git", "-c", "user.email=test@test.com", "-c", "user.name=Test User", "commit", "-m", "Initial commit", chdir: helper.root)
+			system("git", "commit", "-m", "Initial commit", chdir: helper.root)
 			
 			package_path = helper.build_gem_in_worktree(signing_key: false)
 			expect(File).to be(:exist?, package_path)

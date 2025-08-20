@@ -12,6 +12,8 @@ group :maintenance, optional: true do
 	gem "bake-modernize"
 	gem "bake-releases"
 	
+	gem "agent-context"
+	
 	gem "utopia-project"
 end
 
@@ -27,5 +29,3 @@ group :test do
 	
 	gem "bake-test"
 end
-
-gem "agent-context", "~> 0.2.1"

@@ -8,13 +8,29 @@ require "console/event/spawn"
 
 module Bake
 	module Gem
+		# Exception raised when a command execution fails.
+		class CommandExecutionError < RuntimeError
+			def initialize(message, status)
+				super(message)
+				@status = status
+			end
+			
+			# @attribute [Process::Status] The status object of the failed command.
+			attr_reader :status
+			
+			# Helper method for convenience.
+			def exit_code
+				@status.exitstatus
+			end
+		end
+		
 		# Provides shell command execution methods with proper logging and error handling.
 		module Shell
 			# Execute a system command with logging and error handling.
 			# @parameter arguments [Array] The command and its arguments to execute.
 			# @parameter options [Hash] Additional options to pass to Process.spawn.
 			# @returns [Boolean] True if the command executed successfully.
-			# @raises [RuntimeError] If the command fails.
+			# @raises [CommandExecutionError] If the command fails.
 			def system(*arguments, **options)
 				Console::Event::Spawn.for(*arguments, **options).emit(self)
 				
@@ -25,7 +41,7 @@ module Bake
 					pid, status = Process.wait2(pid) if pid
 					
 					unless status.success?
-						raise "Failed to execute #{arguments}: #{status}!"
+						raise Bake::Gem::CommandExecutionError.new("Failed to execute #{arguments}: #{status}!", status)
 					end
 					
 					return true
@@ -37,7 +53,7 @@ module Bake
 			# @parameter options [Hash] Additional options to pass to Process.spawn.
 			# @yields {|input| ...} The input stream from the executed command.
 			# @returns [Object] The return value of the block.
-			# @raises [RuntimeError] If the command fails.
+			# @raises [CommandExecutionError] If the command fails.
 			def execute(*arguments, **options)
 				Console::Event::Spawn.for(*arguments, **options).emit(self)
 				
@@ -51,7 +67,7 @@ module Bake
 						pid, status = Process.wait2(pid)
 						
 						unless status.success?
-							raise "Failed to execute #{arguments}: #{status}!"
+							raise Bake::Gem::CommandExecutionError.new("Failed to execute #{arguments}: #{status}!", status)
 						end
 					end
 				end
@@ -61,7 +77,7 @@ module Bake
 			# @parameter arguments [Array] The command and its arguments to execute.
 			# @parameter options [Hash] Additional options to pass to Process.spawn.
 			# @returns [Array(String)] The output lines from the executed command.
-			# @raises [RuntimeError] If the command fails.
+			# @raises [CommandExecutionError] If the command fails.
 			def readlines(*arguments, **options)
 				execute(*arguments, **options) do |output|
 					return output.readlines

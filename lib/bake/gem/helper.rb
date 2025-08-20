@@ -112,6 +112,9 @@ module Bake
 			def update_version(bump, version_path = self.version_path)
 				return false unless version_path
 				
+				# Guard against consecutive version bumps
+				guard_last_commit_not_version_bump
+				
 				lines = File.readlines(version_path)
 				new_version = nil
 				
@@ -140,6 +143,29 @@ module Bake
 				
 				if lines.any?
 					raise "Repository has uncommited changes!\n#{lines.join('')}"
+				end
+				
+				return true
+			end
+			
+			# Verify that the last commit was not a version bump.
+			# @returns [Boolean] True if the last commit was not a version bump.
+			# @raises [RuntimeError] If the last commit was a version bump.
+			def guard_last_commit_not_version_bump
+				# Get the last commit message:
+				begin
+					last_commit_message = readlines("git", "log", "-1", "--pretty=format:%s", chdir: @root).first&.strip
+				rescue CommandExecutionError => error
+					# If git log fails (e.g., no commits yet), skip the check:
+					if error.exit_code == 128
+						return true
+					else
+						raise
+					end
+				end
+				
+				if last_commit_message && last_commit_message.match?(/^Bump (patch|minor|major|version)( version)?\.?$/i)
+					raise "Last commit appears to be a version bump: #{last_commit_message.inspect}. Cannot bump version consecutively."
 				end
 				
 				return true

@@ -21,7 +21,9 @@ describe Bake::Gem::Shell do
 		end
 		
 		it "raises an error if the command fails" do
-			expect{shell.system("false")}.to raise_exception(RuntimeError)
+			expect{shell.system("false")}.to raise_exception(Bake::Gem::CommandExecutionError) do |error|
+				expect(error.status).to be == 1
+			end
 		end
 	end
 	
@@ -33,7 +35,9 @@ describe Bake::Gem::Shell do
 		end
 		
 		it "raises an error if the command fails" do
-			expect{shell.execute("false")}.to raise_exception(RuntimeError)
+			expect{shell.execute("false") {|input| input.read}}.to raise_exception(Bake::Gem::CommandExecutionError) do |error|
+				expect(error.exit_code).to be == 1
+			end
 		end
 	end
 	
