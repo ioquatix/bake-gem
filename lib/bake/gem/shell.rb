@@ -8,7 +8,13 @@ require "console/event/spawn"
 
 module Bake
 	module Gem
+		# Provides shell command execution methods with proper logging and error handling.
 		module Shell
+			# Execute a system command with logging and error handling.
+			# @parameter arguments [Array] The command and its arguments to execute.
+			# @parameter options [Hash] Additional options to pass to Process.spawn.
+			# @returns [Boolean] True if the command executed successfully.
+			# @raises [RuntimeError] If the command fails.
 			def system(*arguments, **options)
 				Console::Event::Spawn.for(*arguments, **options).emit(self)
 				
@@ -26,6 +32,12 @@ module Bake
 				end
 			end
 			
+			# Execute a command and yield its output to a block.
+			# @parameter arguments [Array] The command and its arguments to execute.
+			# @parameter options [Hash] Additional options to pass to Process.spawn.
+			# @yields {|input| ...} The input stream from the executed command.
+			# @returns [Object] The return value of the block.
+			# @raises [RuntimeError] If the command fails.
 			def execute(*arguments, **options)
 				Console::Event::Spawn.for(*arguments, **options).emit(self)
 				
@@ -45,6 +57,11 @@ module Bake
 				end
 			end
 			
+			# Execute a command and return its output as an array of lines.
+			# @parameter arguments [Array] The command and its arguments to execute.
+			# @parameter options [Hash] Additional options to pass to Process.spawn.
+			# @returns [Array(String)] The output lines from the executed command.
+			# @raises [RuntimeError] If the command fails.
 			def readlines(*arguments, **options)
 				execute(*arguments, **options) do |output|
 					return output.readlines

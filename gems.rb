@@ -27,3 +27,5 @@ group :test do
 	
 	gem "bake-test"
 end
+
+gem "agent-context", "~> 0.2.1"

@@ -8,6 +8,8 @@ require_relative "../lib/bake/gem/shell"
 
 include Bake::Gem::Shell
 
+# Initialize the gem context with helper for gem operations.
+# @parameter context [Bake::Context] The bake execution context.
 def initialize(context)
 	super(context)
 	
