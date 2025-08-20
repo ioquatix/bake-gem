@@ -200,7 +200,7 @@ module Bake
 					worktree_helper = self.class.new(worktree_path)
 					
 					# Build gem in the worktree using a temporary directory
-					worktree_pkg_path = worktree_helper.build_gem(root: "tmp_pkg", signing_key: signing_key)
+					worktree_pkg_path = worktree_helper.build_gem(signing_key: signing_key)
 					
 					# Ensure output directory exists in original location
 					FileUtils.mkdir_p(original_pkg_path)
@@ -229,7 +229,7 @@ module Bake
 				end
 				
 				if path = paths.first
-					return ::Gem::Specification.load(path)
+					return ::Gem::Specification.load(File.expand_path(path, @root))
 				end
 			end
 		end
