@@ -59,7 +59,7 @@ module Bake
 			end
 			
 			# Increment the version according to the provided bump specification.
-			# @parameter bump [Array(Integer)] Array specifying how to increment each version part.
+			# @parameter bump [Array(Integer | Nil)] Array specifying how to increment each version part.
 			# @returns [Version] Self, for method chaining.
 			def increment(bump)
 				bump.each_with_index do |increment, index|
@@ -70,9 +70,10 @@ module Bake
 					
 					if increment == 1
 						@parts[index] += 1
-					elsif increment.zero?
+					elsif increment == 0
 						@parts[index] = 0
 					end
+					# If increment is nil, we don't change that part of the version
 				end
 				
 				return self
