@@ -9,4 +9,5 @@ metadata:
 files:
 - path: getting-started.md
   title: Getting Started
-  description: This guide explains how to use `bake-gem` to release gems.
+  description: This guide explains how to use `bake-gem` to release gems safely and
+    efficiently.
