@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide explains how to use `bake-gem` to release gems.
+This guide explains how to use `bake-gem` to release gems safely and efficiently.
 
 ## Installation
 
@@ -20,27 +20,209 @@ end
 
 ## Usage
 
-Releasing a gem locally is the most typical process.
+Before using `bake-gem`, ensure you have:
+
+1. A properly configured `gemspec` file in your project root
+2. A clean git repository (no uncommitted changes)
+3. Your gem's version file (typically `lib/your_gem/version.rb`)
+4. RubyGems credentials configured for publishing
+
+### Local Release Process
+
+The most typical process for releasing a gem locally:
 
 ``` bash
-$ bake gem:release:version:(major|minor|patch) gem:release
+$ bake gem:release:version:patch gem:release
 ```
 
-This will bump the gem version, commit it, build and push the gem, then tag it.
+This command will:
+1. **Guard against consecutive version bumps** - Prevents accidentally bumping version twice
+2. **Check repository cleanliness** - Ensures no uncommitted changes
+3. **Increment the version** - Updates your version file (patch/minor/major)
+4. **Commit the version change** - Creates a commit with the version bump
+5. **Build the gem in a clean worktree** - Isolates the build process
+6. **Push to RubyGems** - Publishes your gem
+7. **Create and push git tags** - Tags the release
 
-### Automated
+### Version Increment Options
 
-Releasing a gem via a automated pipeline is also supported. Locally, create a release branch:
+Choose the appropriate version increment:
 
 ``` bash
-$ bake gem:release:branch:(major|minor|patch)
+# For bug fixes (1.0.0 -> 1.0.1)
+$ bake gem:release:version:patch gem:release
+
+# For new features (1.0.0 -> 1.1.0)
+$ bake gem:release:version:minor gem:release
+
+# For breaking changes (1.0.0 -> 2.0.0)
+$ bake gem:release:version:major gem:release
 ```
 
-This will create a branch, bump the gem version and commit it. You are then responsible for merging this (e.g. using a pull request). Once this is done, to release the gem:
+## Advanced Workflows
+
+### Automated CI/CD Pipeline
+
+For releasing gems via automated pipelines, use a two-step process:
+
+#### Step 1: Create Release Branch (Locally)
 
 ``` bash
-$ export RUBYGEMS_HOST=...
-$ export GEM_HOST_API_KEY=...
+# Create a release branch with version bump
+$ bake gem:release:branch:patch  # or minor/major
+```
+
+This will:
+- Create a new branch named `releases/v[new-version]`
+- Bump the gem version
+- Commit the version change
+- Push the branch to origin
+
+#### Step 2: Release from CI (After Merge)
+
+Once the release branch is merged into main:
+
+``` bash
+$ export RUBYGEMS_HOST=https://rubygems.org
+$ export GEM_HOST_API_KEY=your_api_key
 
 $ bake gem:release
 ```
+
+### Individual Commands
+
+You can also run individual steps:
+
+``` bash
+# Just build the gem
+$ bake gem:build
+
+# Install the gem locally for testing
+$ bake gem:install
+
+# List files that will be included in the gem
+$ bake gem:files
+
+# Build without signing
+$ bake gem:build signing_key=false
+```
+
+## Safety Features
+
+`bake-gem` includes several safety features:
+
+### Consecutive Version Bump Prevention
+The tool automatically prevents consecutive version bumps by checking the last commit message. If the last commit was already a version bump (e.g., "Bump patch version."), it will raise an error.
+
+### Clean Worktree Building
+Gems are built in isolated git worktrees to ensure the build environment exactly matches your committed code, preventing issues with uncommitted changes affecting the build.
+
+### Repository Cleanliness Check
+Before any release operation, the tool ensures your repository has no uncommitted changes.
+
+## Configuration
+
+### Gem Signing
+
+To sign your gems, ensure your gemspec includes:
+
+``` ruby
+spec.signing_key = "path/to/private_key.pem"
+spec.cert_chain = ["path/to/certificate.pem"]
+```
+
+Or disable signing explicitly:
+
+``` bash
+$ bake gem:build signing_key=false
+```
+
+### RubyGems Configuration
+
+For automated releases, set these environment variables:
+
+``` bash
+export RUBYGEMS_HOST=https://rubygems.org  # or your private gem server
+export GEM_HOST_API_KEY=your_api_key
+```
+
+## Examples
+
+### Complete Release Example
+
+``` bash
+# 1. Ensure clean repository
+$ git status
+
+# 2. Run tests
+$ bundle exec rake test  # or your test command
+
+# 3. Release with patch version increment
+$ bake gem:release:version:patch gem:release
+
+# Output:
+# Updated version: v1.2.4
+# Successfully built RubyGem
+# Name: my-gem
+# Version: 1.2.4
+# File: my-gem-1.2.4.gem
+# Pushing gem to https://rubygems.org...
+# Tagged: v1.2.4
+```
+
+### Branch-based Release Example
+
+``` bash
+# Create release branch
+$ bake gem:release:branch:minor
+# Creates branch: releases/v1.3.0
+# Commits version bump
+# Pushes branch
+
+# After code review and merge:
+$ git checkout main
+$ git pull
+$ bake gem:release
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**"Repository has uncommitted changes"**
+```bash
+$ git status  # Check what's uncommitted
+$ git add .   # Stage changes
+$ git commit -m "Prepare for release"  # Or stash them
+```
+
+**"Last commit appears to be a version bump"**
+```bash
+# Make some changes first, or use --force if intentional
+$ git log -1  # Check the last commit message
+```
+
+**"Multiple gemspecs found"**
+```bash
+# Specify which gemspec to use or remove extras
+$ ls *.gemspec
+```
+
+**"No version file found"**
+```bash
+# Ensure your version file follows the expected pattern:
+# VERSION = "1.0.0"
+```
+
+### Getting Help
+
+List all available gem commands:
+``` bash
+$ bake list | grep gem
+```
+
+Get help for specific commands:
+``` bash
+$ bake gem:release --help
+```
+````
