@@ -95,6 +95,7 @@ module Bake
 			
 			# @attribute [String] The root directory of the gem project.
 			attr :root
+			
 			# @attribute [Gem::Specification] The gemspec for the gem.
 			attr :gemspec
 			
