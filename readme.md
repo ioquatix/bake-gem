@@ -14,6 +14,10 @@ Please see the [project documentation](https://ioquatix.github.io/bake-gem/) for
 
 Please see the [project releases](https://ioquatix.github.io/bake-gem/releases/index) for all releases.
 
+### v0.13.0
+
+  - Add `after_gem_release` hook for post-release actions.
+
 ### v0.12.0
 
   - Add `guard_last_commit_not_version_bump` method to prevent consecutive version bumps.

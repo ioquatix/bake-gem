@@ -1,6 +1,6 @@
 # Releases
 
-## Unreleased
+## v0.13.0
 
   - Add `after_gem_release` hook for post-release actions.
 
