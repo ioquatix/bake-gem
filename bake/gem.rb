@@ -65,6 +65,7 @@ def release(tag: true)
 	end
 	
 	@helper.push_release(current_branch: current_branch)
+	context["after_gem_release"]&.call(name: @helper.gemspec.name, version: version, tag: tag_name, path: path)
 	
 	return {
 		name: @helper.gemspec.name,

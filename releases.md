@@ -1,5 +1,9 @@
 # Releases
 
+## Unreleased
+
+  - Add `after_gem_release` hook for post-release actions.
+
 ## v0.12.0
 
   - Add `guard_last_commit_not_version_bump` method to prevent consecutive version bumps.
