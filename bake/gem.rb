@@ -2,6 +2,7 @@
 
 # Released under the MIT License.
 # Copyright, 2021-2025, by Samuel Williams.
+# Copyright, 2025, by Copilot.
 
 # Initialize the gem context with helper for gem operations.
 # @parameter context [Bake::Context] The bake execution context.

@@ -2,6 +2,7 @@
 
 # Released under the MIT License.
 # Copyright, 2024-2025, by Samuel Williams.
+# Copyright, 2025, by Copilot.
 
 require "bake/gem/helper"
 require "sus/fixtures/console/null_logger"

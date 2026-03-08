@@ -28,7 +28,7 @@ def increment(bump, message: "Bump version.")
 	gemspec = helper.gemspec
 	
 	helper.update_version(bump) do |version|
-		Console.logger.info(self) {"Updated version: #{version}"}
+		Console.info(self, "Updated version:", version: version)
 		
 		# Ensure that any subsequent tasks use the correct version!
 		gemspec.version = version.join

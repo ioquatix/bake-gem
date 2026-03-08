@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2024, by Samuel Williams.
+# Copyright, 2021-2025, by Samuel Williams.
+# Copyright, 2025, by Copilot.
 
 source "https://rubygems.org"
 
@@ -29,3 +30,5 @@ group :test do
 	
 	gem "bake-test"
 end
+
+gem "rubocop-md", "~> 2.0", group: :test
