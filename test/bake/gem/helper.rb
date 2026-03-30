@@ -16,6 +16,40 @@ describe Bake::Gem::Helper do
 		expect(helper.version_path).to be == "lib/bake/gem/version.rb"
 	end
 	
+	it "can find the correct version path with multiple version files" do
+		# Create a mock gemspec with multiple version files
+		gemspec = Gem::Specification.new do |spec|
+			spec.name = "protocol-rack"
+			spec.version = "1.0.0"
+			spec.files = [
+				"lib/protocol/rack/version.rb",
+				"lib/protocol/rack/adapter/version.rb"
+			]
+		end
+		
+		helper_with_multiple_versions = subject.new(Dir.pwd, gemspec: gemspec)
+		
+		# Should select the path matching the gem name convention
+		expect(helper_with_multiple_versions.version_path).to be == "lib/protocol/rack/version.rb"
+	end
+	
+	it "falls back to shortest path when gem name convention doesn't match" do
+		# Create a mock gemspec where gem name doesn't match the path convention
+		gemspec = Gem::Specification.new do |spec|
+			spec.name = "my-gem"
+			spec.version = "1.0.0"
+			spec.files = [
+				"lib/protocol/rack/version.rb",
+				"lib/protocol/rack/adapter/version.rb"
+			]
+		end
+		
+		helper_with_multiple_versions = subject.new(Dir.pwd, gemspec: gemspec)
+		
+		# Should select the shortest path as fallback
+		expect(helper_with_multiple_versions.version_path).to be == "lib/protocol/rack/version.rb"
+	end
+	
 	with "repository" do
 		let(:helper) {@helper}
 		

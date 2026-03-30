@@ -103,7 +103,17 @@ module Bake
 			# @returns [String | Nil] The path to the version file, or nil if not found.
 			def version_path
 				if @gemspec
-					@gemspec.files.grep(/lib(.*?)\/version.rb/).first
+					candidates = @gemspec.files.grep(/lib(.*?)\/version.rb/)
+					
+					# If only one version file exists, use it:
+					return candidates.first if candidates.size == 1
+					
+					# Try to match the gem name convention (e.g., "protocol-rack" -> "lib/protocol/rack/version.rb"):
+					expected_path = "lib/#{@gemspec.name.gsub('-', '/')}/version.rb"
+					return expected_path if candidates.include?(expected_path)
+					
+					# Fall back to the shortest path (most likely to be the main gem version):
+					return candidates.min_by(&:length)
 				end
 			end
 			

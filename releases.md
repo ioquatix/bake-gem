@@ -1,5 +1,9 @@
 # Releases
 
+## Unreleased
+
+  - Better `version.rb` detection in `version_path` method.
+
 ## v0.13.0
 
   - Add `after_gem_release` hook for post-release actions.
