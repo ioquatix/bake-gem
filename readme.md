@@ -14,6 +14,10 @@ Please see the [project documentation](https://ioquatix.github.io/bake-gem/) for
 
 Please see the [project releases](https://ioquatix.github.io/bake-gem/releases/index) for all releases.
 
+### v0.13.1
+
+  - Better `version.rb` detection in `version_path` method.
+
 ### v0.13.0
 
   - Add `after_gem_release` hook for post-release actions.

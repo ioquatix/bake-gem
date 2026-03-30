@@ -1,6 +1,6 @@
 # Releases
 
-## Unreleased
+## v0.13.1
 
   - Better `version.rb` detection in `version_path` method.
 
