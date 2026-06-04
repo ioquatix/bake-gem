@@ -102,6 +102,12 @@ describe Bake::Gem::Helper do
 			expect(helper.guard_clean).to be_truthy
 		end
 		
+		it "can list uncommitted changes" do
+			File.write(File.expand_path("readme.md", helper.root), "Hello, World!")
+			
+			expect(helper.uncommitted_changes).to be == ["?? readme.md\n"]
+		end
+		
 		it "raises an error if repository is dirty" do
 			File.write(File.expand_path("readme.md", helper.root), "Hello, World!")
 			
