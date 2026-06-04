@@ -151,13 +151,19 @@ module Bake
 			# @returns [Boolean] True if the repository is clean.
 			# @raises [RuntimeError] If there are uncommitted changes in the repository.
 			def guard_clean
-				lines = readlines("git", "status", "--porcelain", chdir: @root)
+				lines = uncommitted_changes
 				
 				if lines.any?
 					raise "Repository has uncommited changes!\n#{lines.join('')}"
 				end
 				
 				return true
+			end
+			
+			# Get the list of uncommitted changes in the repository.
+			# @returns [Array(String)] The porcelain status lines for uncommitted changes.
+			def uncommitted_changes
+				readlines("git", "status", "--porcelain", chdir: @root)
 			end
 			
 			# Verify that the last commit was not a version bump.

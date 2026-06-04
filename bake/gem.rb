@@ -31,8 +31,14 @@ end
 # Build and install the gem into system gems.
 # @parameter local [Boolean] only use locally available caches.
 def install(local: false)
-	# For installing the gem, don't bother with signinng it:
-	path = @helper.build_gem(signing_key: false)
+	changes = @helper.uncommitted_changes
+	
+	if changes.any?
+		Console.warn(self, "Installing from clean git worktree; uncommitted changes are not included in the installed gem.", changes: changes.map(&:chomp))
+	end
+	
+	# For installing the gem, don't bother with signing it:
+	path = @helper.build_gem_in_worktree(signing_key: false)
 	
 	arguments = []
 	arguments << "--local" if local
