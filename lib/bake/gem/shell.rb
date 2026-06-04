@@ -11,6 +11,9 @@ module Bake
 	module Gem
 		# Exception raised when a command execution fails.
 		class CommandExecutionError < RuntimeError
+			# Initialize the exception with the specified message and process status.
+			# @parameter message [String] The error message.
+			# @parameter status [Process::Status] The status object of the failed command.
 			def initialize(message, status)
 				super(message)
 				@status = status
